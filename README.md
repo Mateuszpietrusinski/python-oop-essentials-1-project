@@ -143,14 +143,15 @@ Pełna demonstracja znajduje się w pliku [`demo.py`](demo.py) i pokrywa siedem 
 from zoo import Zoo
 
 zoo = Zoo("Łódź Zoo", city="Łódź")
-savanna = zoo.create_enclosure("Savanna", capacity=3)
-aviary  = zoo.create_enclosure("Aviary", capacity=2)
+savanna       = zoo.create_enclosure("Savanna", capacity=3)
+aviary        = zoo.create_enclosure("Aviary", capacity=2)
+reptile_house = zoo.create_enclosure("Reptile House", capacity=2)
 ```
 
 ### Scenariusz 2 — Dodanie zwierząt do wybiegów
 
 ```python
-from zoo import Lion, Elephant, Monkey, Eagle, Penguin
+from zoo import Lion, Elephant, Monkey, Eagle, Penguin, Crocodile
 
 savanna.add_animal(Lion("Simba", age=5))
 savanna.add_animal(Elephant("Dumbo", age=10, tusk_length=1.2))
@@ -158,6 +159,8 @@ savanna.add_animal(Monkey("George", age=4))
 
 aviary.add_animal(Eagle("Sam", age=3))
 aviary.add_animal(Penguin("Pete", age=2))
+
+reptile_house.add_animal(Crocodile("Rex", age=8, length=4.2))
 ```
 
 ### Scenariusz 3 — Próba przepełnienia wybiegu (`EnclosureFullError`)
@@ -185,11 +188,16 @@ for msg in savanna.feed_all():
 ### Scenariusz 5 — Przypisanie opiekuna i karmienie z poziomu pracownika
 
 ```python
-from zoo import Zookeeper
+from zoo import Zookeeper, Veterinarian, Guide
 
 keeper = Zookeeper("Anna Kowalska", salary=4800.0)
 keeper.assign_to(savanna)
 zoo.hire_employee(keeper)
+
+vet = Veterinarian("Dr. Wiśniewski", specialization="exotic", salary=7500.0)
+guide = Guide("Piotr Nowak", languages=["Polish", "English", "German"], salary=3600.0)
+zoo.hire_employee(vet)
+zoo.hire_employee(guide)
 
 print(keeper.feed_animals())
 ```
@@ -243,7 +251,8 @@ Jako weterynarz chcę sprawdzić stan zdrowia zwierzęcia (`animal.health`) z gw
 | `@property` z walidacją     | `Animal.health` (clamping), `Animal.name` (walidacja)                         |
 | Atrybut klasy`_next_id`      | `Animal._next_id`, `Employee._next_id`                                        |
 | Enkapsulacja                 | atrybuty`_name`, `_health`, `_animals`, `_enclosures`                         |
-| `__str__` / `__repr__`       | `Animal`, `Enclosure`, `Employee`                                             |
+| `__str__`                    | `Animal`                                                                      |
+| `__repr__`                   | `Animal`, `Enclosure`, `Employee`, `FeedingSchedule`, `Zoo`                   |
 | `__eq__` / `__hash__`        | `Animal` (po ID), `Enclosure` (po nazwie)                                     |
 | `__lt__` (sortowanie)        | `Animal` (po nazwie)                                                          |
 | `__len__`                    | `Enclosure`, `FeedingSchedule`, `Zoo`                                         |
@@ -280,10 +289,15 @@ projekt/
 ├── tests/
 │   ├── conftest.py           # fixtures pytest
 │   └── test_zoo.py           # testy jednostkowe
+├── openspec/                 # specyfikacje (źródło prawdy o API)
+│   └── specs/                # animal-hierarchy, employee-system, ...
+├── docs/                     # dodatkowa dokumentacja
 ├── demo.py                   # demonstracja działania
 ├── README.md
 ├── CHECKLIST.md
 ├── JUSTIFICATION.md
+├── Projekt_A_Zoo_Garden.md   # treść zadania
+├── LICENSE
 └── requirements.txt
 ```
 
@@ -295,6 +309,7 @@ projekt/
 
 - Python 3.10+
 - pytest >= 7.0.0
+- pytest-cov >= 4.0.0
 
 ### Instalacja zależności
 
