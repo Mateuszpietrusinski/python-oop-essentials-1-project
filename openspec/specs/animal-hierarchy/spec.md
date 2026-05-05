@@ -1,7 +1,7 @@
 ## ADDED Requirements
 
 ### Requirement: Abstract Animal base class
-The system SHALL define an abstract base class `Animal` (inheriting from `ABC`) in `src/zoo/animals.py`. It SHALL have a class-level counter `_next_id: int = 1` that auto-increments for each new instance, storing the assigned integer in `self._id`. Constructor parameters: `name: str`, `species: str`, `age: int`. The class SHALL be uninstantiable directly.
+The system SHALL define an abstract base class `Animal` (inheriting from `ABC`) in `src/zoo/animals/animal.py` (sub-package: each class lives in its own module under `src/zoo/animals/`, with `__init__.py` re-exporting them all). It SHALL have a class-level counter `_next_id: int = 1` that auto-increments for each new instance, storing the assigned integer in `self._id`. Constructor parameters: `name: str`, `species: str`, `age: int`. The class SHALL be uninstantiable directly.
 
 #### Scenario: Direct instantiation raises TypeError
 - **WHEN** code attempts `Animal("X", "X", 1)` directly

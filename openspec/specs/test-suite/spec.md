@@ -1,11 +1,22 @@
 ## ADDED Requirements
 
-### Requirement: Exactly 15 pytest tests
-The system SHALL include exactly 15 test functions in `tests/test_zoo.py`, all passing. Tests SHALL use `pytest` fixtures defined in `tests/conftest.py`. Tests SHALL use `pytest.raises` for exception scenarios.
+### Requirement: Exactly 15 pytest tests, distributed by capability
+The system SHALL include exactly 15 test functions in total across the `tests/` directory, all passing. Tests are distributed across capability-aligned files:
+
+- `tests/test_animals.py` — 8 tests (animal-hierarchy)
+- `tests/test_enclosure.py` — 4 tests (enclosure-management)
+- `tests/test_feeding.py` — 1 test (feeding-schedule)
+- `tests/test_zoo.py` — 2 tests (zoo-core)
+
+Tests SHALL use `pytest` fixtures defined in `tests/conftest.py`. Tests SHALL use `pytest.raises` for exception scenarios.
 
 #### Scenario: All tests pass
 - **WHEN** `pytest tests/` is run
 - **THEN** all 15 tests pass with exit code 0
+
+#### Scenario: Test count is auditable
+- **WHEN** `grep -rE '^def test_' tests/` is run
+- **THEN** the result contains exactly 15 lines
 
 ### Requirement: Test coverage of all 15 specified scenarios
 The test file SHALL cover these exact scenarios (one test function each):
