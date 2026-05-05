@@ -1,14 +1,14 @@
 ## ADDED Requirements
 
 ### Requirement: FeedingEntry dataclass
-The system SHALL define `FeedingEntry` in `src/zoo/feeding.py` using `@dataclass`. Fields: `enclosure_name: str`, `time: str`, `food_type: str`, `notes: str = ""`. The dataclass SHALL auto-generate `__init__`, `__repr__`, and `__eq__`.
+The system SHALL define `FeedingEntry` in `src/zoo/feeding/feeding_entry.py` using `@dataclass` (one class per file under the `feeding` sub-package). Fields: `enclosure_name: str`, `time: str`, `food_type: str`, `notes: str = ""`. The dataclass SHALL auto-generate `__init__`, `__repr__`, and `__eq__`.
 
 #### Scenario: FeedingEntry equality
 - **WHEN** two `FeedingEntry` instances with identical fields are compared
 - **THEN** `entry1 == entry2` returns `True`
 
 ### Requirement: FeedingSchedule composition class
-`FeedingSchedule` SHALL be defined in `src/zoo/feeding.py`. Constructor: `day: str = "Monday"`. It SHALL own its `FeedingEntry` instances (composition — entries do not exist outside the schedule). It SHALL provide: `add_entry(enclosure_name, time, food_type, notes="") -> FeedingEntry`, `remove_entry(entry: FeedingEntry) -> None`, `get_by_enclosure(name: str) -> list[FeedingEntry]`, `__len__ -> int`.
+`FeedingSchedule` SHALL be defined in `src/zoo/feeding/feeding_schedule.py`. Constructor: `day: str = "Monday"`. It SHALL own its `FeedingEntry` instances (composition — entries do not exist outside the schedule). It SHALL provide: `add_entry(enclosure_name, time, food_type, notes="") -> FeedingEntry`, `remove_entry(entry: FeedingEntry) -> None`, `get_by_enclosure(name: str) -> list[FeedingEntry]`, `__len__ -> int`.
 
 #### Scenario: add_entry creates and stores an entry
 - **WHEN** `schedule.add_entry("Savanna", "08:00", "meat")` is called

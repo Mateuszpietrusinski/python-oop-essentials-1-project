@@ -130,13 +130,15 @@ Enclosure, Zoo, FeedingSchedule, FeedingEntry(@dataclass)
 ## 3. Szkielet klas i metod
 
 ```python
-# exceptions.py
+# exceptions/  (po jednej klasie w pliku: zoo_error.py, enclosure_full_error.py,
+#                animal_not_found_error.py, invalid_animal_data_error.py)
 class ZooError(Exception): pass
 class EnclosureFullError(ZooError): pass
 class AnimalNotFoundError(ZooError): pass
 class InvalidAnimalDataError(ZooError): pass
 
-# animals.py
+# animals/  (po jednej klasie w pliku: animal.py, mammal.py, bird.py, reptile.py,
+#            lion.py, elephant.py, monkey.py, eagle.py, penguin.py, crocodile.py)
 from abc import ABC, abstractmethod
 
 class Animal(ABC):
@@ -204,7 +206,8 @@ class Crocodile(Reptile):
     def __init__(self, name, age, length=3.0): ...
     def make_sound(self) -> str: ...
 
-# employees.py
+# employees/  (po jednej klasie w pliku: employee.py, zookeeper.py,
+#              veterinarian.py, guide.py)
 class Employee(ABC):
     _next_id: int = 1
     def __init__(self, name: str, salary: float) -> None: ...
@@ -232,7 +235,7 @@ class Guide(Employee):
     def work(self) -> str: ...
     def role(self) -> str: ...
 
-# enclosure.py
+# enclosure.py  (jedna klasa — pozostaje płaski moduł)
 class Enclosure:
     def __init__(self, name: str, capacity: int) -> None: ...
     def add_animal(self, animal) -> None: ...      # EnclosureFullError
@@ -246,7 +249,7 @@ class Enclosure:
     def __eq__(self, other) -> bool: ...
     def __hash__(self) -> int: ...
 
-# feeding.py
+# feeding/  (po jednej klasie w pliku: feeding_entry.py, feeding_schedule.py)
 from dataclasses import dataclass
 
 @dataclass
@@ -262,7 +265,7 @@ class FeedingSchedule:
     def get_by_enclosure(self, name) -> list: ...
     def __len__(self) -> int: ...
 
-# zoo.py
+# zoo.py  (jedna klasa — pozostaje płaski moduł)
 class Zoo:
     def __init__(self, name: str, city: str = "Lodz") -> None: ...
     def create_enclosure(self, name, capacity) -> Enclosure: ...
@@ -440,12 +443,36 @@ Należy stosować adnotacje typów dla: parametrów metod publicznych, wartości
 projekt/
 |-- src/
 |   |-- zoo/
-|       |-- __init__.py
-|       |-- ...  (pliki modułów)
-|       |-- exceptions.py
+|       |-- __init__.py                # publiczny API (re-eksport)
+|       |-- exceptions/                # jedna klasa = jeden plik
+|       |   |-- __init__.py
+|       |   |-- zoo_error.py
+|       |   |-- enclosure_full_error.py
+|       |   |-- animal_not_found_error.py
+|       |   |-- invalid_animal_data_error.py
+|       |-- animals/                   # jedna klasa = jeden plik
+|       |   |-- __init__.py
+|       |   |-- animal.py              # Animal (ABC)
+|       |   |-- mammal.py, bird.py, reptile.py        # klasy pośrednie
+|       |   |-- lion.py, elephant.py, monkey.py       # gatunki Mammal
+|       |   |-- eagle.py, penguin.py                  # gatunki Bird
+|       |   |-- crocodile.py                          # gatunek Reptile
+|       |-- enclosure.py               # Enclosure (jedna klasa)
+|       |-- feeding/
+|       |   |-- __init__.py
+|       |   |-- feeding_entry.py       # FeedingEntry (@dataclass)
+|       |   |-- feeding_schedule.py    # FeedingSchedule
+|       |-- employees/
+|       |   |-- __init__.py
+|       |   |-- employee.py            # Employee (ABC)
+|       |   |-- zookeeper.py, veterinarian.py, guide.py
+|       |-- zoo.py                     # Zoo (jedna klasa)
 |-- tests/
-|   |-- conftest.py
-|   |-- test_*.py
+|   |-- conftest.py                    # współdzielone fixtures
+|   |-- test_animals.py                # 8 testów
+|   |-- test_enclosure.py              # 4 testy
+|   |-- test_feeding.py                # 1 test
+|   |-- test_zoo.py                    # 2 testy (15 łącznie)
 |-- demo.py
 |-- README.md
 |-- CHECKLIST.md

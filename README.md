@@ -245,7 +245,7 @@ Jako weterynarz chcę sprawdzić stan zdrowia zwierzęcia (`animal.health`) z gw
 
 | Mechanizm                    | Lokalizacja                                                                   |
 | ------------------------------ | ------------------------------------------------------------------------------- |
-| Klasy abstrakcyjne (ABC)     | `animals.py: Animal`, `employees.py: Employee`                                |
+| Klasy abstrakcyjne (ABC)     | `animals/animal.py: Animal`, `employees/employee.py: Employee`                |
 | Dziedziczenie wielopoziomowe | `Mammal → Lion`, `Bird → Penguin`                                           |
 | `@abstractmethod`            | `Animal.make_sound`, `Animal.diet`, `Employee.work`, `Employee.role`          |
 | `@property` z walidacją     | `Animal.health` (clamping), `Animal.name` (walidacja)                         |
@@ -279,16 +279,43 @@ Jako weterynarz chcę sprawdzić stan zdrowia zwierzęcia (`animal.health`) z gw
 projekt/
 ├── src/
 │   └── zoo/
-│       ├── __init__.py       # eksport publicznego API
-│       ├── exceptions.py     # hierarchia wyjątków
-│       ├── animals.py        # klasy zwierząt
-│       ├── enclosure.py      # klasa Enclosure
-│       ├── feeding.py        # FeedingEntry, FeedingSchedule
-│       ├── employees.py      # klasy pracowników
-│       └── zoo.py            # klasa Zoo
+│       ├── __init__.py                # eksport publicznego API
+│       ├── exceptions/                # hierarchia wyjątków (jedna klasa = jeden plik)
+│       │   ├── __init__.py
+│       │   ├── zoo_error.py           # ZooError
+│       │   ├── enclosure_full_error.py
+│       │   ├── animal_not_found_error.py
+│       │   └── invalid_animal_data_error.py
+│       ├── animals/                   # klasy zwierząt (jedna klasa = jeden plik)
+│       │   ├── __init__.py
+│       │   ├── animal.py              # Animal (ABC)
+│       │   ├── mammal.py              # Mammal(Animal)
+│       │   ├── bird.py                # Bird(Animal)
+│       │   ├── reptile.py             # Reptile(Animal)
+│       │   ├── lion.py                # Lion(Mammal)
+│       │   ├── elephant.py            # Elephant(Mammal)
+│       │   ├── monkey.py              # Monkey(Mammal)
+│       │   ├── eagle.py               # Eagle(Bird)
+│       │   ├── penguin.py             # Penguin(Bird)
+│       │   └── crocodile.py           # Crocodile(Reptile)
+│       ├── enclosure.py               # klasa Enclosure (jedna klasa)
+│       ├── feeding/                   # harmonogram karmienia
+│       │   ├── __init__.py
+│       │   ├── feeding_entry.py       # FeedingEntry (@dataclass)
+│       │   └── feeding_schedule.py    # FeedingSchedule
+│       ├── employees/                 # klasy pracowników (jedna klasa = jeden plik)
+│       │   ├── __init__.py
+│       │   ├── employee.py            # Employee (ABC)
+│       │   ├── zookeeper.py           # Zookeeper(Employee)
+│       │   ├── veterinarian.py        # Veterinarian(Employee)
+│       │   └── guide.py               # Guide(Employee)
+│       └── zoo.py                     # klasa Zoo (jedna klasa)
 ├── tests/
-│   ├── conftest.py           # fixtures pytest
-│   └── test_zoo.py           # testy jednostkowe
+│   ├── conftest.py                    # fixtures pytest (współdzielone)
+│   ├── test_animals.py                # 8 testów — animal-hierarchy
+│   ├── test_enclosure.py              # 4 testy — enclosure-management
+│   ├── test_feeding.py                # 1 test — feeding-schedule
+│   └── test_zoo.py                    # 2 testy — zoo-core (15 łącznie)
 ├── openspec/                 # specyfikacje (źródło prawdy o API)
 │   └── specs/                # animal-hierarchy, employee-system, ...
 ├── docs/                     # dodatkowa dokumentacja

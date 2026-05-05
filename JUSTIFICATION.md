@@ -39,12 +39,41 @@ Specyfikacja wymaga `@dataclass`. Dataclass automatycznie generuje `__init__`, `
 
 Opiekun może istnieć w systemie zanim zostanie przypisany do wybiegu. `None` jako wartość domyślna sygnalizuje brak przypisania. Metoda `feed_animals()` obsługuje ten przypadek zwracając czytelny komunikat zamiast rzucać wyjątek — jest to bezpieczniejsze w kontekście demo i testów.
 
-## J9. Dlaczego testy są w jednym pliku `test_zoo.py`?
+## J9. Dlaczego testy są podzielone na pliki wg capability?
 
-Specyfikacja wymaga dokładnie 15 testów. Jeden plik ułatwia audyt liczby testów i zapewnia czytelną strukturę. Fixtures współdzielone są przez `conftest.py`, co jest standardową praktyką pytest.
+Specyfikacja wymaga dokładnie 15 testów — i nadal mamy ich 15. Po refaktoryzacji zostały rozdzielone na cztery pliki odpowiadające obszarom funkcjonalnym (capability):
 
-## J10. Struktura modułów — podział na pliki
+- `tests/test_animals.py` — 8 testów (hierarchia zwierząt, walidacja, polimorfizm)
+- `tests/test_enclosure.py` — 4 testy (zarządzanie wybiegiem, wyjątki pojemności)
+- `tests/test_feeding.py` — 1 test (`FeedingSchedule`)
+- `tests/test_zoo.py` — 2 testy (`isinstance/issubclass`, raport `Zoo`)
 
-Import order: `exceptions → animals → enclosure → feeding → employees → zoo`
+Zalety podziału:
+- każdy plik testowy mapuje się na jedną sekcję `openspec/specs/*/spec.md`, co ułatwia audyt pokrycia,
+- mniejsze pliki są łatwiejsze do czytania i nawigacji w IDE,
+- diff przy modyfikacji jednej grupy testów nie miesza się z innymi.
 
-Ten porządek eliminuje importy cykliczne. `animals.py` nie zależy od żadnego innego modułu zoo. `enclosure.py` importuje tylko `animals` i `exceptions`. `employees.py` importuje `enclosure`. `zoo.py` importuje wszystkie pozostałe.
+Liczba testów pozostaje weryfikowalna jednym poleceniem: `grep -rE '^def test_' tests/ | wc -l` zwraca `15`. Fixtures dalej żyją w `tests/conftest.py` i są współdzielone między wszystkimi czterema plikami — pytest wykrywa je automatycznie dzięki konwencji `conftest.py`.
+
+## J10. Struktura modułów — jedna klasa, jeden plik
+
+Import order: `exceptions/ → animals/ → enclosure.py → feeding/ → employees/ → zoo.py`
+
+Pakiet `src/zoo/` jest zorganizowany według zasady **one class per file** — każda klasa publiczna mieszka w osobnym pliku, zgrupowana w sub-pakiecie odpowiadającym jej domenie:
+
+- `exceptions/` — cztery wyjątki, każdy w osobnym pliku (`zoo_error.py`, `enclosure_full_error.py`, `animal_not_found_error.py`, `invalid_animal_data_error.py`).
+- `animals/` — bazowa `animal.py`, klasy pośrednie (`mammal.py`, `bird.py`, `reptile.py`) i sześć konkretnych gatunków (`lion.py`, `elephant.py`, `monkey.py`, `eagle.py`, `penguin.py`, `crocodile.py`).
+- `feeding/` — `feeding_entry.py` (dataclass) i `feeding_schedule.py` (kompozycja).
+- `employees/` — `employee.py` (ABC) plus trzy role w osobnych plikach (`zookeeper.py`, `veterinarian.py`, `guide.py`).
+- `enclosure.py` i `zoo.py` pozostają płaskimi modułami — zawierają po jednej klasie, więc opakowanie ich w folder byłoby zbędną ceremonią.
+
+Każdy sub-pakiet posiada własny `__init__.py` re-eksportujący swoje klasy. Główny `src/zoo/__init__.py` re-eksportuje cały publiczny API, więc `from zoo import Lion, Zookeeper, …` działa identycznie jak przed refaktoryzacją.
+
+Dlaczego ten porządek eliminuje cykle:
+- `exceptions/` nie zależy od niczego w pakiecie zoo,
+- `animals/animal.py` importuje tylko `InvalidAnimalDataError` z `..exceptions`,
+- klasy pośrednie i gatunki w `animals/` importują w głąb tego samego sub-pakietu (`from .animal import Animal`, `from .mammal import Mammal`),
+- `enclosure.py` importuje `Animal` z `.animals` i wybrane wyjątki,
+- `feeding/feeding_schedule.py` importuje `FeedingEntry` z `.feeding_entry`,
+- `employees/zookeeper.py` importuje `Enclosure` z `..enclosure`,
+- `zoo.py` jest ostatnim ogniwem i importuje ze wszystkich sub-pakietów.

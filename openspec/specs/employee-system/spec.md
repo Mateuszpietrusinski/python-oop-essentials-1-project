@@ -1,7 +1,7 @@
 ## ADDED Requirements
 
 ### Requirement: Abstract Employee base class
-The system SHALL define an abstract base class `Employee` (inheriting from `ABC`) in `src/zoo/employees.py`. It SHALL have a class-level `_next_id: int = 1` auto-increment counter. Constructor: `name: str`, `salary: float`. It SHALL declare `work() -> str` and `role() -> str` as `@abstractmethod`. It SHALL implement `__repr__`, `__eq__` (by `_id`), `__hash__` (by `_id`).
+The system SHALL define an abstract base class `Employee` (inheriting from `ABC`) in `src/zoo/employees/employee.py` (sub-package: each class lives in its own module — `employee.py`, `zookeeper.py`, `veterinarian.py`, `guide.py`). It SHALL have a class-level `_next_id: int = 1` auto-increment counter. Constructor: `name: str`, `salary: float`. It SHALL declare `work() -> str` and `role() -> str` as `@abstractmethod`. It SHALL implement `__repr__`, `__eq__` (by `_id`), `__hash__` (by `_id`).
 
 #### Scenario: Direct instantiation raises TypeError
 - **WHEN** code attempts `Employee("Alice", 5000)` directly

@@ -1,29 +1,8 @@
-"""Feeding schedule classes for the Zoo Garden system.
-
-FeedingEntry is a simple dataclass representing a single scheduled feeding.
-FeedingSchedule composes FeedingEntry objects — entries do not exist outside a schedule.
-"""
+"""FeedingSchedule class for the Zoo Garden system."""
 
 from __future__ import annotations
 
-from dataclasses import dataclass, field
-
-
-@dataclass
-class FeedingEntry:
-    """A single scheduled feeding for an enclosure.
-
-    Attributes:
-        enclosure_name: Name of the enclosure to be fed.
-        time: Feeding time as a string (e.g. "08:00").
-        food_type: Type of food to be provided (e.g. "meat", "fish").
-        notes: Optional additional notes. Defaults to "".
-    """
-
-    enclosure_name: str
-    time: str
-    food_type: str
-    notes: str = ""
+from .feeding_entry import FeedingEntry
 
 
 class FeedingSchedule:
